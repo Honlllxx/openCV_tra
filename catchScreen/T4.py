@@ -31,7 +31,7 @@ class DirectXOverlayDetector:
 
         # 加载类别名称
         self.class_names = self.get_class_names()
-        self.colors = np.random.uniform(0, 255, size=(len(self.class_names), 3))
+        self.colors  = np.random.uniform(0, 255, size=(len(self.class_names), 3))
 
         # 检测状态
         self.running = False

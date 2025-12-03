@@ -53,17 +53,40 @@ result = ocr.ocr(polarImg, cls=False)
 for idx in range(len(result)):
     res = result[idx]
     for line in res:
-        print('----------------------------')
-        print(line)
-        pt1 = ((int)(line[0][0][0]), (int)(line[0][0][1]))
-        pt2 = ((int)(line[0][1][0]), (int)(line[0][1][1]))
-        pt3 = ((int)(line[0][2][0]), (int)(line[0][2][1]))
-        pt4 = ((int)(line[0][3][0]), (int)(line[0][3][1]))
+
+        # line 可能是两种结构：
+        # ① [bbox, (text, prob)]
+        # ② [ [x1,y1],[x2,y2] ... ]（有些模型只返回 bbox）
+
+        # 统一解析 bbox
+        if isinstance(line[0], list) and len(line[0]) == 4 and isinstance(line[0][0], list):
+            # 格式： [ [[x1,y1],[x2,y2],[x3,y3],[x4,y4]], ('text', prob) ]
+            bbox = line[0]
+            text = line[1][0] if isinstance(line[1], (list, tuple)) else ""
+        else:
+            # 格式： [ [x1,y1],[x2,y2],[x3,y3],[x4,y4] ]
+            bbox = line
+            text = ""
+
+        # 解析 4 个点
+        try:
+            pt1 = (int(bbox[0][0]), int(bbox[0][1]))
+            pt2 = (int(bbox[1][0]), int(bbox[1][1]))
+            pt3 = (int(bbox[2][0]), int(bbox[2][1]))
+            pt4 = (int(bbox[3][0]), int(bbox[3][1]))
+        except:
+            print("跳过异常 bbox:", bbox)
+            continue
+
+        # 绘制 bbox
         cv2.line(polarImg, pt1, pt2, (0, 0, 255), 1, cv2.LINE_AA)
         cv2.line(polarImg, pt2, pt3, (0, 0, 255), 1, cv2.LINE_AA)
         cv2.line(polarImg, pt3, pt4, (0, 0, 255), 1, cv2.LINE_AA)
         cv2.line(polarImg, pt1, pt4, (0, 0, 255), 1, cv2.LINE_AA)
-        cv2.putText(polarImg, line[1][0], (pt1[0], pt1[1] + 40), 0, 0.6, (0, 0, 255), 1)
+
+        # 画文字
+        if text != "":
+            cv2.putText(polarImg, text, (pt1[0], pt1[1] + 40), 0, 0.6, (0, 0, 255), 1)
 
 cv2.imshow('polarImg-OCR', polarImg)
 

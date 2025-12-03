@@ -19,7 +19,7 @@ from ultralytics.utils import ROOT
 from ultralytics.utils.checks import check_yaml
 
 # 实例化YOLO类，加载模型
-model = YOLO('D:\\Python project\\openCV_tra\\30980-02\\chp9\\yolov8n.pt')
+model = YOLO('../30980-02/chp9/yolov8n.pt')
 
 
 # 加载COCO数据集的类别名称
@@ -251,7 +251,7 @@ print("开始运行")
 sc = ScreenCapture(
     screen_frame=(1920, 1080),  # 根据你的屏幕分辨率调整
     region=(0.8, 0.8),  # 检测区域大小
-    save_results=True,  # 是否保存结果
+    save_results=False,  # 是否保存结果
     save_folder='detection_results'  # 保存结果的文件夹
 )
 sc.run()
